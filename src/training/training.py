@@ -1,8 +1,8 @@
-from models import net
 
 class Trainer():
 
-    def __init__(self, training_data, optimizer, criterion):
+    def __init__(self, net, training_data, optimizer, criterion):
+        self.net = net
         self.training_data = training_data
         self.optimizer = optimizer
         self.criterion = criterion
@@ -13,7 +13,7 @@ class Trainer():
             for i, data in enumerate(self.training_data, 0):
                 inputs, labels = data
                 self.optimizer.zero_grad()
-                outpus = net(inputs)
+                outpus = self.net(inputs)
                 loss = self.criterion(outpus, labels) # di default usa soft-max | loss = nn.CrossEntropyLoss()
                 loss.backward()
                 self.optimizer.step()

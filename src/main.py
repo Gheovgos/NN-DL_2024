@@ -13,7 +13,7 @@ optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
 dataset = dataset.Dataset(batch_size=64, shuffle_train=True)
 train, test = dataset.prepare_dataset()
 
-trainer = Trainer(training_data=train, optimizer=optimizer, criterion=criterion)
+trainer = Trainer(net=net, training_data=train, optimizer=optimizer, criterion=criterion)
 trainer.train()
 
 tester = Tester(net=net, test_data=test)

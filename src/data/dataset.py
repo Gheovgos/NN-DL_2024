@@ -7,8 +7,8 @@ class Dataset():
         self.batch_size = batch_size
         self.shuffle_train = shuffle_train
 
-    def transform():
-        return transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))]) 
+    def transform(self, img):
+        return transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])(img)
 
     def prepare_dataset(self):
         trainset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=self.transform)
