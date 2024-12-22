@@ -19,3 +19,4 @@ Da “Deep Learning: Foundations and concepts”
 
 
 BACK PROPAGO
+OGAPORP KCAB

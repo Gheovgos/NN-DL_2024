@@ -1,0 +1,27 @@
+neural_network_project/
+├── data/                # Directory to store datasets
+│   ├── raw/             # Raw, unprocessed data
+│   └── processed/       # Processed and cleaned data
+├── notebooks/           # Jupyter notebooks for exploratory data analysis and experimentation
+├── src/                 # Source code for the project
+│   ├── __init__.py      # Mark the src directory as a package
+│   ├── data/            # Data loading and processing scripts
+│   │   └── make_dataset.py
+│   ├── models/          # Model definitions
+│   │   └── model.py
+│   ├── training/        # Training scripts
+│   │   └── train_model.py
+│   ├── evaluation/      # Evaluation scripts
+│   │   └── evaluate_model.py
+│   └── utils/           # Utility functions
+│       └── utils.py
+├── tests/               # Unit tests for the project
+│   └── test_model.py
+├── scripts/             # Scripts for running the training and evaluation
+│   ├── train.sh
+│   └── evaluate.sh
+├── config/              # Configuration files for the project
+│   └── config.yaml
+├── requirements.txt     # List of Python dependencies
+├── README.md            # Project documentation
+└── .gitignore           # Git ignore file
