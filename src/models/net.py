@@ -14,3 +14,4 @@ class Net(nn.Module):
         x = self.relu(x)
         x = self.output_layer(x)
         return x
+    
