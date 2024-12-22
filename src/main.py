@@ -1,20 +1,36 @@
+import torch
 import torch.nn as nn
 import torch.optim as optim
+import time
 
-from data import dataset
 from models.net import Net
 from evaluator.test import Tester
 from training.training import Trainer
+from data.dataset import Dataset
 
-net = Net()
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
+try:
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')    
+    print(f'Using device: {device}\n')
 
-dataset = dataset.Dataset(batch_size=64, shuffle_train=True)
-train, test = dataset.prepare_dataset()
+    for n_nodes in range(12000, 60001, 12000):
+        print(f'Test with n_nodes = {n_nodes}')
 
-trainer = Trainer(net=net, training_data=train, optimizer=optimizer, criterion=criterion)
-trainer.train()
+        start_time = time.time()
 
-tester = Tester(net=net, test_data=test)
-tester.evaluate_accuracy()
+        net = Net(n_nodes=n_nodes)
+        criterion = nn.CrossEntropyLoss()
+        optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
+
+        dataset = Dataset(batch_size=64, shuffle_train=True, train_set_size=30000, test_set_size=7500)
+        train_set, test_set = dataset.prepare_dataset()
+
+        trainer = Trainer(net=net, training_data=train_set, optimizer=optimizer, criterion=criterion)
+        trainer.train()
+
+        tester = Tester(net=net, test_data=test_set)
+        tester.evaluate_accuracy()
+
+        print("--- %s seconds ---\n" % (time.time() - start_time))
+
+except KeyboardInterrupt:
+    print("Interrupted from keyboard")
