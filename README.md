@@ -1,5 +1,8 @@
 # Neural Network and Deep Learning 2024
 ## Giorgio Longobardo e Claudio Riccio
+
+Traccia scelta: 2
+
 (dal pdf) \
 Da “Neural Networks for Pattern Recognition”
 > Section 1: 1.1,1.2, 1.3, 1.4., 1.8,1.9 \
