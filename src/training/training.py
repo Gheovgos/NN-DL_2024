@@ -8,7 +8,7 @@ class Trainer():
                 inputs, labels = data
                 optimizer.zero_grad()
                 outpus = net(inputs)
-                loss = criterion(outpus, labels) # di default usa soft-max
+                loss = criterion(outpus, labels) # di default usa soft-max | loss = nn.CrossEntropyLoss()
                 loss.backward()
                 optimizer.step()
                 running_loss += loss.item()
