@@ -1,0 +1,5 @@
+data/MNIST/*
+src/evaluator/__pycache__/*
+src/training/__pycache__/training.cpython-312.pyc
+src/models/__pycache__/net.cpython-312.pyc
+src/data/__pycache__/dataset.cpython-312.pyc

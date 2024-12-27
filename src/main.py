@@ -9,7 +9,15 @@ from training.training import Trainer
 from data.dataset import Dataset
 
 try:
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')    
+    # CHECK GPU NVIDIA CUDA
+    if torch.cuda.is_available(): 
+        device = torch.device('cuda') 
+    # CHECK GPU AMD ROCM                  
+    elif torch.version.hip is not None:         # Non c'è una funzione per vedere se rocm è disponibile, quindi bisogna fare il check della versione
+        device = torch.device('hip')
+    else:
+        device = torch.device('cpu')
+    
     print(f'Using device: {device}\n')
 
     for n_nodes in range(12000, 60001, 12000):
