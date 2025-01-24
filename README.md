@@ -15,6 +15,20 @@ hyperparameters constant, such as activation functions and RProp parameters. If 
 due to computational time and memory constraints, you can reduce the dimensions of the 
 raw MNIST dataset images (e.g., using the imresize function in MATLAB).
 
+Traccia 6:
+
+Consider the raw images from the MNIST dataset as input. This is a classification problem
+with C classes, where C= 10. Extract a global dataset of N pairs, and divide It appropriately
+into training and test sets (consider at least 10,000 elements for the training set and 2,500 for
+the test set). Following the article “Empirical evaluation of the improved RProp learning
+algorithms, Christian Igel, Michael Husken, Neurocomputing, 2003”, compare the classic
+resilient backpropagation (RProp) with at least two proposed variants of the algorithm as
+weight update methods (batch update). Fix the activation function and the number of
+internal nodes (at least three different dimensions), and compare the results obtained with
+the different learning algorithms. If necessary, due to computational time and memory
+constraints, you can reduce the dimensions of the raw MNIST dataset images (e.g., using the
+imresize function in MATLAB).
+
 Riferimento a:
 
 https://christian-igel.github.io/paper/EEotIRLA.pdf

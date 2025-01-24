@@ -1,3 +1,5 @@
+import datetime
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -8,41 +10,50 @@ from evaluator.test import Tester
 from training.training import Trainer
 from data.dataset import Dataset
 
-try:
-    # CHECK GPU NVIDIA CUDA
-    if torch.cuda.is_available(): 
-        device = torch.device('cuda') 
-    # CHECK GPU AMD ROCM                  
-    elif torch.version.hip is not None:         # Non c'è una funzione per vedere se rocm è disponibile, quindi bisogna fare il check della versione
-        device = torch.device('hip')
-    else:
-        device = torch.device('cpu')
-    
-    print(f'Using device: {device}\n')
+def main():
+    try:
 
-    for n_nodes in range(12000, 60001, 12000):
-        print(f'Test with n_nodes = {n_nodes}')
+        device = pick_device()
 
-        start_time = time.time()
+        for n_nodes in range(12000, 60001, 12000):
+            print(f'Test with n_nodes = {n_nodes}')
 
-        net = Net(n_nodes=n_nodes)
-        model = net.to(device)
-        criterion = nn.CrossEntropyLoss()
-        optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
+            start_time = time.time()
 
-        dataset = Dataset(batch_size=256, shuffle_train=True, train_set_size=30000, test_set_size=7500)
-        train_set, test_set = dataset.prepare_dataset()
+            model = Net(n_nodes=n_nodes).to(device)
 
-        trainer = Trainer(net=net, training_data=train_set, optimizer=optimizer, criterion=criterion)
-        trainer.train()
+            loss_fn = nn.CrossEntropyLoss()
+            optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
 
-        tester = Tester(net=net, test_data=test_set)
-        tester.evaluate_accuracy()
+            dataset = Dataset(batch_size=256, shuffle_train=True, train_set_size=60000, test_set_size=12000)
+            train_loader, test_loader = dataset.prepare_dataset()
 
-        print("--- %s seconds ---\n" % (time.time() - start_time))
+            trainer = Trainer(net=model, training_data=train_loader, optimizer=optimizer, loss_fn=loss_fn)
+            # trainer.train(device=device)
+            trainer.train_loop(batch_size=256, device=device)
 
-        torch.save(model.state_dict(), "model.pth")
-        print("Saved PyTorch Model State to model.pth")
+            tester = Tester(net=model, test_data=test_loader)
+            # tester.evaluate_accuracy(device=device)
+            tester.test_loop(model=model, loss_fn=loss_fn, device=device)
 
-except KeyboardInterrupt:
-    print("Interrupted from keyboard")
+            print("--- %s seconds ---\n" % (time.time() - start_time))
+
+            file_name = f"model-{n_nodes}-{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}.pth"
+            torch.save(model.state_dict(), file_name)
+            print(f"Saved PyTorch Model State to {file_name}")
+
+    except KeyboardInterrupt:
+        print("Interrupted from keyboard")
+
+
+def pick_device():
+    device = (
+        "cuda"
+        if torch.cuda.is_available()
+        else "hip"
+        if torch.version.hip is not None
+        else "cpu"
+    )
+    print(f"Using {device} device")
+
+    return device
