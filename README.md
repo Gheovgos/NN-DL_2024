@@ -15,6 +15,10 @@ hyperparameters constant, such as activation functions and RProp parameters. If 
 due to computational time and memory constraints, you can reduce the dimensions of the 
 raw MNIST dataset images (e.g., using the imresize function in MATLAB).
 
+Riferimento a:
+
+https://christian-igel.github.io/paper/EEotIRLA.pdf
+
 (dal pdf) \
 Da “Neural Networks for Pattern Recognition”
 > Section 1: 1.1,1.2, 1.3, 1.4., 1.8,1.9 \
