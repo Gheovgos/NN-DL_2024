@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+
 class Net(nn.Module):
     def __init__(self, n_nodes):
         super(Net, self, ).__init__()
@@ -13,4 +14,3 @@ class Net(nn.Module):
         x = self.relu(x)
         x = self.output_layer(x)
         return x
-    

@@ -26,10 +26,11 @@ try:
         start_time = time.time()
 
         net = Net(n_nodes=n_nodes)
+        model = net.to(device)
         criterion = nn.CrossEntropyLoss()
         optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
 
-        dataset = Dataset(batch_size=64, shuffle_train=True, train_set_size=30000, test_set_size=7500)
+        dataset = Dataset(batch_size=256, shuffle_train=True, train_set_size=30000, test_set_size=7500)
         train_set, test_set = dataset.prepare_dataset()
 
         trainer = Trainer(net=net, training_data=train_set, optimizer=optimizer, criterion=criterion)
@@ -39,6 +40,9 @@ try:
         tester.evaluate_accuracy()
 
         print("--- %s seconds ---\n" % (time.time() - start_time))
+
+        torch.save(model.state_dict(), "model.pth")
+        print("Saved PyTorch Model State to model.pth")
 
 except KeyboardInterrupt:
     print("Interrupted from keyboard")
