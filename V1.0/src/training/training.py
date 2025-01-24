@@ -23,23 +23,3 @@ class Trainer():
                     print(f'Epoch {epoch + 1}, Batch {i + 1}, Loss: {running_loss / 200:.3f}')
                     running_loss = 0.0
         print('Finished training')
-
-    def train_loop(self, batch_size, device):
-        size = len(self.training_data)
-        self.net.train()
-        for batch, (X, y) in enumerate(self.training_data):
-
-            X.to(device), y.to(device)
-
-            pred = self.net(X)
-            loss = self.loss_fn(pred, y)
-
-            # Backpropagation
-            loss.backward()
-            self.optimizer.step()
-            self.optimizer.zero_grad()
-
-            if batch % 100 == 0:
-                loss, current = loss.item(), batch * batch_size + len(X)
-                print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
-
