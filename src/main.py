@@ -21,7 +21,7 @@ try:
     print(f'Using device: {device}\n')
 
 
-    nodes = [128, 256, 512, 768, 1024]
+    nodes = [128, 256, 512, 1024, 2048]
 
     for n_nodes in nodes:
         print(f'Test with n_nodes = {n_nodes}')
