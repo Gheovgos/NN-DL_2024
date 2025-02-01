@@ -20,23 +20,26 @@ try:
     
     print(f'Using device: {device}\n')
 
-    for n_nodes in range(12000, 60001, 12000):
+
+    nodes = [128, 256, 512, 768, 1024]
+
+    for n_nodes in nodes:
         print(f'Test with n_nodes = {n_nodes}')
 
         start_time = time.time()
 
-        net = Net(n_nodes=n_nodes)
+        net = Net(n_nodes=n_nodes).to(device)
         criterion = nn.CrossEntropyLoss()
-        optimizer = optim.SGD(net.parameters(), lr=0.01, momentum=0.9)
+        optimizer = optim.Rprop(net.parameters(), lr=0.01)
 
-        dataset = Dataset(batch_size=64, shuffle_train=True, train_set_size=30000, test_set_size=7500)
-        train_set, test_set = dataset.prepare_dataset()
+        dataset = Dataset(batch_size=64)
+        train_dataloader, test_dataloader = dataset.prepare_dataset()
 
-        trainer = Trainer(net=net, training_data=train_set, optimizer=optimizer, criterion=criterion)
-        trainer.train()
+        trainer = Trainer(net=net, training_data=train_dataloader, optimizer=optimizer, criterion=criterion)
+        trainer.train(device)
 
-        tester = Tester(net=net, test_data=test_set)
-        tester.evaluate_accuracy()
+        tester = Tester(net=net, test_data=test_dataloader)
+        tester.evaluate_accuracy(device)
 
         print("--- %s seconds ---\n" % (time.time() - start_time))
 

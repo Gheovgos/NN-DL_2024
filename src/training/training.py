@@ -7,11 +7,15 @@ class Trainer():
         self.optimizer = optimizer
         self.criterion = criterion
 
-    def train(self):
+    def train(self, device):
         for epoch in range(10):
             running_loss = 0.0
             for i, data in enumerate(self.training_data, 0):
                 inputs, labels = data
+
+                inputs = inputs.to(device)
+                labels = labels.to(device)
+
                 self.optimizer.zero_grad()
                 outpus = self.net(inputs)
                 loss = self.criterion(outpus, labels) # di default usa soft-max | loss = nn.CrossEntropyLoss()

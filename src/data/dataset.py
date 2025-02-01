@@ -1,28 +1,34 @@
-import torch
+from torch.utils.data import DataLoader, random_split
 import torchvision
-import torchvision.transforms as transforms
-import torch.utils.data as data_utils
+from torchvision.transforms.v2 import Compose, Normalize, RandomRotation, RandomAffine, ToTensor
+
 
 class Dataset():
-    def __init__(self, batch_size, shuffle_train, train_set_size, test_set_size):
+    def __init__(self, batch_size):
         self.batch_size = batch_size
-        self.shuffle_train = shuffle_train
-        self.trainset_size = train_set_size
-        self.testset_size = test_set_size
-
-    def transform(self, img):
-        return transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])(img)
 
     def prepare_dataset(self):
-        trainset = torchvision.datasets.MNIST(root='./data', train=True, download=True, transform=self.transform)
-        train_indices = torch.arange(self.trainset_size)
-        trainset = data_utils.Subset(trainset, train_indices)
-        
-        testset = torchvision.datasets.MNIST(root='./data', train=False, download=True, transform=self.transform)
-        test_indices = torch.arange(self.testset_size)
-        testset = data_utils.Subset(testset, test_indices)
 
-        trainloader = torch.utils.data.DataLoader(trainset, batch_size=self.batch_size, shuffle=self.shuffle_train)
-        testloader = torch.utils.data.DataLoader(testset, batch_size=self.batch_size, shuffle=False)
-        return trainloader, testloader
+        transform = Compose([
+            RandomRotation(10),
+            RandomAffine(0, shear=10, scale=(0.8, 1.2)),
+            ToTensor(),
+            Normalize((0.5,), (0.5,))
+        ])
+
+        full_data =  torchvision.datasets.MNIST(
+            root="data",
+            train=True,
+            download=True,
+            transform=transform
+        )
+
+        test_size = int(0.2 * len(full_data))
+        train_size = len(full_data) - test_size
+
+        train_data, test_data = random_split(full_data, [train_size, test_size])
+
+        train_dataloader = DataLoader(train_data, batch_size=self.batch_size, shuffle=True)
+        test_dataloader = DataLoader(test_data, batch_size=self.batch_size, shuffle=True)
+        return train_dataloader, test_dataloader
         
