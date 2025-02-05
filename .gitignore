@@ -6,3 +6,7 @@ V1.0/src/data/__pycache__/dataset.cpython-312.pyc
 trained_model_20250205_120219.pth
 trained_model.pth
 V2.0/backpropago_base.py
+src/data/__pycache__/dataset.cpython-312.pyc
+src/evaluator/__pycache__/test.cpython-312.pyc
+src/training/__pycache__/training.cpython-312.pyc
+src/models/__pycache__/net.cpython-312.pyc
