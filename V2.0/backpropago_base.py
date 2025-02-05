@@ -1,16 +1,18 @@
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision
 import torchvision.transforms.v2 as transforms
-from datetime import datetime
+from sklearn.model_selection import KFold
+from sklearn.model_selection import train_test_split
 
 device = (
-   # "cuda"
-    # if torch.cuda.is_available()
-    # else "mps"
-    #if torch.backends.mps.is_available()
-    "cpu"
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps"
+    if torch.backends.mps.is_available()
+    else "cpu"
 )
 print(f"Using {device} device")
 
@@ -20,11 +22,14 @@ transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,))
 ])
 
-train_data = torchvision.datasets.MNIST(root='../data', train=True, transform=transform, download=True)
-test_data = torchvision.datasets.MNIST(root='../data', train=False, transform=transform, download=True)
+full_data = torchvision.datasets.MNIST(root='../data', train=True, transform=transform, download=True)
 
-train_loader = torch.utils.data.DataLoader(train_data, batch_size=128, shuffle=True, num_workers=2)
-test_loader = torch.utils.data.DataLoader(test_data, batch_size=128, shuffle=True, num_workers=2)
+train_val_data, test_data = train_test_split(full_data, test_size=0.2, shuffle=True)
+
+k_folds = 5
+kf = KFold(n_splits=k_folds, shuffle=True)
+
+test_loader = torch.utils.data.DataLoader(test_data, batch_size=1000, shuffle=False, num_workers=2)
 
 class ShallowNet(nn.Module):
     def __init__(self, n_nodes):
@@ -40,15 +45,8 @@ class ShallowNet(nn.Module):
         return x
 
 n_nodes = 256
-filename = f"trained_model.pth"
-
 net = ShallowNet(n_nodes=n_nodes).to(device)
 
-#try:
-#    net.load_state_dict(torch.load('trained_model.pth', weights_only=True))
-#except FileNotFoundError as error:
-#    pass 
-    
 loss_function = nn.CrossEntropyLoss()
 optimizer = optim.Rprop(net.parameters(), lr=0.01)
 
@@ -94,40 +92,40 @@ def test_loop(test_loader):
     test_loss /= len(test_loader)
     return test_loss, accuracy
 
+best_accuracy = 0.0
+all_accuracies = []
 
-print(f'Using optim: {optimizer}')
-for epoch in range(50):
-    print(f'Training epoch {epoch+1}...')
+for fold, (train_idx, val_idx) in enumerate(kf.split(np.arange(len(full_data)))):
+    print(f'Fold {fold+1}/{k_folds}')
 
-    running_loss = train_loop(running_loss=0.0, train_loader=train_loader)
-    test_loss, accuracy = test_loop(test_loader=test_loader)
+    train_subset = torch.utils.data.Subset(full_data, train_idx)
+    val_subset = torch.utils.data.Subset(full_data, val_idx)
 
-    print(f'Loss: {running_loss/len(train_loader):.4f}')
-    print(f'Accuracy: {accuracy}%')
+    train_loader = torch.utils.data.DataLoader(train_subset, batch_size=128, shuffle=True, num_workers=2)
+    val_loader = torch.utils.data.DataLoader(val_subset, batch_size=1000, shuffle=True, num_workers=2)
 
-torch.save(net.state_dict(), filename)
+    for epoch in range(20):
+        print(f'Training epoch {epoch+1}...')
+        
+        running_loss = train_loop(0.0, train_loader)
+        val_loss, accuracy = test_loop(val_loader)
 
-net = ShallowNet(n_nodes=n_nodes)
-net.load_state_dict(torch.load(filename, weights_only=True))
-net.to(device)
+        print(f'Loss: {running_loss/len(train_loader):.4f}')
+        print(f'Validation Accuracy: {accuracy:.2f}%')
 
-correct = 0
-total = 0
+        if (best_accuracy < accuracy):
+            best_accuracy = accuracy
 
-net.eval()
+    print(f'Best accuracy for fold {fold+1} was: {accuracy:.2f}%')
 
-with torch.no_grad():
-    for data in test_loader:
-        images, labels = data
-        images, labels = images.to(device), labels.to(device)
+    all_accuracies.append(accuracy)
 
-        outputs = net(images)
-        _, prediction = torch.max(outputs, 1)
-        total += labels.size(0)
-        correct += (prediction == labels).sum().item()
+average_accuracy = np.mean(all_accuracies)
+std_accuracy = np.std(all_accuracies)
 
-accuracy = 100 * correct / total
+print(f'Cross-Validation Accuracy: {average_accuracy:.2f}% ± {std_accuracy:.2f}%')
 
-print(f'Accuracy: {accuracy}%')
+test_loss, test_accuracy = test_loop(test_loader)
+print(f'Test Accuracy: {test_accuracy}%')
 
 
