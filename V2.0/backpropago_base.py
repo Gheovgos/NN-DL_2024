@@ -29,13 +29,11 @@ test_loader = torch.utils.data.DataLoader(test_data, batch_size=128, shuffle=Tru
 class ShallowNet(nn.Module):
     def __init__(self, n_nodes):
         super().__init__()
-        self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(28 * 28, n_nodes)
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(n_nodes, 10)
 
     def forward(self, x):
-        x = self.flatten(x)
         x = self.fc1(x)
         x = self.relu(x)
         x = self.fc2(x)
@@ -61,6 +59,7 @@ def train_loop(running_loss, train_loader):
 
             optimizer.zero_grad()
             
+            inputs = inputs.view(-1, 28*28)
             outputs = net(inputs)
             
             loss = loss_function(outputs, labels)
@@ -81,6 +80,7 @@ def test_loop(test_loader):
             images, labels = data
             images, labels = images.to(device), labels.to(device)
 
+            images = images.view(-1, 28*28)
             outputs = net(images)
             _, prediction = torch.max(outputs, 1)
             total += labels.size(0)

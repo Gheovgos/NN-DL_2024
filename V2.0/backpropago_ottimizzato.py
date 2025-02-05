@@ -6,13 +6,15 @@ import torchvision.transforms.v2 as transforms
 from datetime import datetime
 
 device = (
-"cpu"
+    "cuda"
+    if torch.cuda.is_available()
+    else "mps"
+    if torch.backends.mps.is_available()
+    else "cpu"
 )
 print(f"Using {device} device")
 
 transform = transforms.Compose([
-    transforms.RandomRotation(10),
-    transforms.RandomAffine(0, shear=10, scale=(0.8,1.2)),
     transforms.ToImage(),
     transforms.ToDtype(torch.float32, scale=True),
     transforms.Normalize((0.5,), (0.5,))
@@ -27,14 +29,12 @@ test_loader = torch.utils.data.DataLoader(test_data, batch_size=1000, shuffle=Tr
 class ShallowNet(nn.Module):
     def __init__(self, n_nodes):
         super().__init__()
-        self.flatten = nn.Flatten()
         self.fc1 = nn.Linear(28 * 28, n_nodes)
         self.bn1 = nn.BatchNorm1d(n_nodes)
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(n_nodes, 10)
 
     def forward(self, x):
-        x = self.flatten(x)
         x = self.fc1(x)
         x = self.bn1(x)
         x = self.relu(x)
@@ -67,7 +67,9 @@ class EarlyStopping:
     def load_best_model(self, model):
         model.load_state_dict(self.best_model_state)
 
-net = ShallowNet(256).to(device)
+n_nodes = 16
+net = ShallowNet(n_nodes).to(device)
+
 loss_function = nn.CrossEntropyLoss()
 optimizer = optim.Rprop(net.parameters(), lr=0.01)
 
@@ -78,6 +80,7 @@ def train_loop(running_loss, train_loader):
 
             optimizer.zero_grad()
             
+            inputs = inputs.view(-1, 28*28)
             outputs = net(inputs)
             
             loss = loss_function(outputs, labels)
@@ -98,6 +101,7 @@ def test_loop(test_loader):
             images, labels = data
             images, labels = images.to(device), labels.to(device)
 
+            images = images.view(-1, 28*28)
             outputs = net(images)
             _, prediction = torch.max(outputs, 1)
             total += labels.size(0)
@@ -114,6 +118,9 @@ def test_loop(test_loader):
 
 early_stopping = EarlyStopping(patience=10, delta=0.01)
 
+best_accuracy = 0.0
+
+print(f'Net structure: {net}')
 print(f'Using optim: {optimizer}')
 for epoch in range(50):
     print(f'Training epoch {epoch+1}...')
@@ -124,21 +131,16 @@ for epoch in range(50):
     print(f'Loss: {running_loss/len(train_loader):.4f}')
     print(f'Accuracy: {accuracy}%')
 
+    if (accuracy > best_accuracy):
+        best_accuracy = accuracy
+
     early_stopping(test_loss, net)
     if early_stopping.early_stop:
         print("Early stopping")
         break   
 
 early_stopping.load_best_model(net)
-
-current_time = datetime.now().strftime("%Y%m%d_%H%M%S")
-filename = f"trained_model_{current_time}.pth"
-
-torch.save(net.state_dict(), filename)
-
-net = ShallowNet(256)
-net.load_state_dict(torch.load(filename, weights_only=True))
-net.to(device)
+print(f'Best accuracy was: {best_accuracy}% with n_nodes {n_nodes}')
 
 correct = 0
 total = 0
