@@ -13,7 +13,7 @@ def run_script():
         print(f"Stderr: {e.stderr}")
         return ""
 
-output_file = f'results_{script}.txt'
+output_file = f'results_{script}_128.txt'
 
 with open(output_file, 'w') as f:
     for i in range(n):
