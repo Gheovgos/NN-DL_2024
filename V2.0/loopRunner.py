@@ -1,12 +1,12 @@
 import subprocess
 
 path = 'V2.0/'
-script = 'backpropago_base.py'
+script = 'backpropago_ottimizzato.py'
 n = 10
 
 def run_script():
     try:
-        result = subprocess.run(['python3', path+script], capture_output=True, text=True, check=True)
+        result = subprocess.run(['python3', script], capture_output=True, text=True, check=True)
         return result.stdout
     except subprocess.CalledProcessError as e:
         print(f"Errore nell'esecuzione dello script: {e}")
