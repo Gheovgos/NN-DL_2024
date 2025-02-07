@@ -3,6 +3,7 @@ import subprocess
 path = 'V2.0/'
 script = 'backpropago_ottimizzato.py'
 n = 10
+n_nodes = 128
 
 def run_script():
     try:
@@ -13,9 +14,11 @@ def run_script():
         print(f"Stderr: {e.stderr}")
         return ""
 
-output_file = f'results_{script}_128.txt'
+output_file = f'results_{script}_{n_nodes}.txt'
 
 with open(output_file, 'w') as f:
+    print(f"Eseguendo: {script} con {n_nodes}")
+    print(f"Creando: {output_file}...")
     for i in range(n):
         print(f"Esecuzione {i+1}...")
         result = run_script()
