@@ -1,0 +1,44 @@
+Esecuzione 1:
+Best accuracy for fold 1 was: 90.32%
+Best accuracy for fold 2 was: 90.56%
+Best accuracy for fold 3 was: 90.60%
+Best accuracy for fold 4 was: 90.69%
+Best accuracy for fold 5 was: 91.08%
+Cross-Validation Accuracy: 90.65% ± 0.25%
+Test Accuracy: 91.16666666666667%
+========================================
+Esecuzione 2:
+Best accuracy for fold 1 was: 90.71%
+Best accuracy for fold 2 was: 90.88%
+Best accuracy for fold 3 was: 91.38%
+Best accuracy for fold 5 was: 91.19%
+Best accuracy for fold 4 was: 91.33%
+Cross-Validation Accuracy: 91.10% ± 0.26%
+Test Accuracy: 91.420000%
+========================================
+Esecuzione 3:
+Best accuracy for fold 1 was: 90.65%
+Best accuracy for fold 2 was: 90.44%
+Best accuracy for fold 3 was: 91.25%
+Best accuracy for fold 4 was: 91.59%
+Best accuracy for fold 5 was: 91.35%
+Cross-Validation Accuracy: 91.06% ± 0.44%
+Test Accuracy: 91.575%
+========================================
+Esecuzione 4:
+Best accuracy for fold 1 was: 90.12%
+Best accuracy for fold 2 was: 90.64%
+Best accuracy for fold 3 was: 90.72%
+Best accuracy for fold 4 was: 90.72%
+Best accuracy for fold 5 was: 91.38%
+Cross-Validation Accuracy: 90.72% ± 0.40%
+Test Accuracy: 91.33333333333333%
+========================================
+Esecuzione 5:
+Best accuracy for fold 1 was: 90.59%
+Best accuracy for fold 2 was: 91.06%
+Best accuracy for fold 3 was: 91.53%
+Best accuracy for fold 4 was: 91.60%
+Best accuracy for fold 5 was: 91.53%
+Cross-Validation Accuracy: 91.26% ± 0.39%
+Test Accuracy: 91.31666666666666%
