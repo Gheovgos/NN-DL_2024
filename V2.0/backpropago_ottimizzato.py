@@ -147,6 +147,7 @@ for fold, (train_idx, val_idx) in enumerate(kf.split(np.arange(len(full_data))))
         if (best_accuracy < accuracy):
             best_accuracy = accuracy
 
+    early_stopping.load_best_model(net)
     print(f'Best accuracy for fold {fold+1} was: {accuracy:.2f}%')
 
     all_accuracies.append(accuracy)
