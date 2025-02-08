@@ -1,7 +1,7 @@
 import subprocess
 
 path = 'V2.0/'
-script = 'backpropago_ottimizzato.py'
+script = 'backpropago_base.py'
 n = 10
 n_nodes = 128
 
